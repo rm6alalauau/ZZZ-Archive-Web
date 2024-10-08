@@ -16,7 +16,7 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/zzz-archive-web/",
+  base: "/",
   plugins: [
     VueRouter(),
     Layouts(),
