@@ -105,15 +105,15 @@ export default {
         switch (this.selectedOption.value) {
           case "100+":
             url =
-              "/api/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
+              "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
             break;
           case "500+":
             url =
-              "/api/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
+              "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
             break;
           case "1000+":
             url =
-              "/api/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
+              "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
             break;
         }
         console.log("Fetching URL:", url);

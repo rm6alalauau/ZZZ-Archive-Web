@@ -16,7 +16,7 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/ZZZ-Archive-Web",
+  base: "/ZZZ-Archive-Web/",
   plugins: [
     VueRouter(),
     Layouts(),
@@ -59,23 +59,23 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://cors-anywhere.herokuapp.com/https://www.pixiv.net",
+        target: "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://www.pixiv.net",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
         headers: {
           Referer: "https://app-api.pixiv.net/",
-          Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
-          "X-Requested-With": "XMLHttpRequest",
+          //Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
+          //"X-Requested-With": "XMLHttpRequest",
         },
       },
       "/pixiv-image": {
-        target: "https://cors-anywhere.herokuapp.com/https://i.pximg.net",
+        target: "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://i.pximg.net",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/pixiv-image/, ""),
         headers: {
           Referer: "https://app-api.pixiv.net/",
-          Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
-          "X-Requested-With": "XMLHttpRequest",
+          //Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
+          //"X-Requested-With": "XMLHttpRequest",
         },
       },
     },
