@@ -122,6 +122,13 @@ export default {
             Referer: "https://app-api.pixiv.net/",
           },
         });
+        const responseHeaders = new Headers(response.headers);
+        responseHeaders.set('Access-Control-Allow-Origin', '*')
+        return new Response(response.body, {
+            headers: responseHeaders,
+            status: response.status,
+            statusText: response.statusText
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
