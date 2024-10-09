@@ -44,7 +44,7 @@
             class="d-inline-block mx-2 text-left"
           >
             <a
-              :href="`https://www.pixiv.net/artworks/${item.id}`"
+              :href="`https://zzz-archive.com/?https://www.pixiv.net/artworks/${item.id}`"
               target="_blank"
             >
               <v-img
@@ -61,7 +61,7 @@
                   :href="`https://www.pixiv.net/users/${item.userId}`"
                   target="_blank"
                 >
-                  <img :src="`https://i.pximg.net/${item.authorAvatar}`" alt="Avatar" />
+                  <img :src="`https://zzz-archive.com/?https://i.pximg.net/${item.authorAvatar}`" alt="Avatar" />
                 </a>
               </v-avatar>
               <span class="ml-2 text-ellipsis">{{ item.authorName }}</span>
@@ -105,15 +105,15 @@ export default {
         switch (this.selectedOption.value) {
           case "100+":
             url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
+              "https://zzz-archive.com/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
             break;
           case "500+":
             url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
+              "https://zzz-archive.com/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
             break;
           case "1000+":
             url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
+              "https://zzz-archive.com/?https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
             break;
         }
         console.log("Fetching URL:", url);
