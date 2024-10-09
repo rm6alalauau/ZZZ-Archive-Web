@@ -48,7 +48,7 @@
               target="_blank"
             >
               <v-img
-                :src="`https://i.pximg.net/${item.imageUrl}`"
+                :src="item.imageUrl"
                 height="160"
                 width="160"
                 class="d-block mx-auto"
@@ -61,10 +61,7 @@
                   :href="`https://www.pixiv.net/users/${item.userId}`"
                   target="_blank"
                 >
-                  <img
-                    :src="`https://i.pximg.net/${item.authorAvatar}`"
-                    alt="Avatar"
-                  />
+                  <img :src="item.authorAvatar" alt="Avatar" />
                 </a>
               </v-avatar>
               <span class="ml-2 text-ellipsis">{{ item.authorName }}</span>
@@ -133,9 +130,15 @@ export default {
           this.list = combinedData.map((item) => ({
             id: item.id,
             userId: item.userId,
-            imageUrl: item.url,
+            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/pixiv-image${item.url.replace(
+              "https://i.pximg.net",
+              ""
+            )}`,
             title: item.title,
-            authorAvatar: item.profileImageUrl,
+            authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/pixiv-image${item.profileImageUrl.replace(
+              "https://i.pximg.net",
+              ""
+            )}`,
             authorName: item.userName,
           }));
         } else {

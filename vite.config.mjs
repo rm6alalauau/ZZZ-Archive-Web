@@ -57,28 +57,6 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    proxy: {
-      "/api": {
-        target: "https://www.pixiv.net",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        headers: {
-          Referer: "https://app-api.pixiv.net/",
-          //Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
-          //"X-Requested-With": "XMLHttpRequest",
-        },
-      },
-      "/pixiv-image": {
-        target: "https://i.pximg.net",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/pixiv-image/, ""),
-        headers: {
-          Referer: "https://app-api.pixiv.net/",
-          //Origin: "https://github.com/rm6alalauau/ZZZ-Archive-Web",
-          //"X-Requested-With": "XMLHttpRequest",
-        },
-      },
-    },
   },
   build: {
     rollupOptions: {
