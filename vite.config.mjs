@@ -59,7 +59,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": {
-        target: "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://www.pixiv.net",
+        target: "https://www.pixiv.net",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
         headers: {
@@ -69,7 +69,7 @@ export default defineConfig({
         },
       },
       "/pixiv-image": {
-        target: "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://i.pximg.net",
+        target: "https://i.pximg.net",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/pixiv-image/, ""),
         headers: {
