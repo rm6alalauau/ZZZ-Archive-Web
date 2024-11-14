@@ -117,7 +117,7 @@ export default {
             break;
         }
         console.log("Fetching URL:", url);
-        const response = await fetch(url);
+        const response = await fetch(`https://cors.zzz-archive-back-end.workers.dev/?url=${encodeURIComponent(url)}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
