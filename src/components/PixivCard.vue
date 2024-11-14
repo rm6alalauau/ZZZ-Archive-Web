@@ -105,19 +105,19 @@ export default {
         switch (this.selectedOption.value) {
           case "100+":
             url =
-              "https://cors.zzz-archive-back-end.workers.dev/?url=https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
+              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
             break;
           case "500+":
             url =
-              "https://cors.zzz-archive-back-end.workers.dev/?url=https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
+              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
             break;
           case "1000+":
             url =
-              "https://cors.zzz-archive-back-end.workers.dev/?url=https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
+              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
             break;
         }
         console.log("Fetching URL:", url);
-        const response = await fetch(url);
+        const response = await fetch(`https://cors.zzz-archive-back-end.workers.dev?url=${encodeURIComponent(url)}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -130,15 +130,9 @@ export default {
           this.list = combinedData.map((item) => ({
             id: item.id,
             userId: item.userId,
-            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/pixiv-image${item.url.replace(
-              "https://i.pximg.net",
-              ""
-            )}`,
+            imageUrl: item.url,
             title: item.title,
-            authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/pixiv-image${item.profileImageUrl.replace(
-              "https://i.pximg.net",
-              ""
-            )}`,
+            authorAvatar: item.profileImageUrl,
             authorName: item.userName,
           }));
         } else {
