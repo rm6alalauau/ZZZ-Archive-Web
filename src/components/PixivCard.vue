@@ -117,7 +117,11 @@ export default {
             break;
         }
         console.log("Fetching URL:", url);
-        const response = await fetch(`https://cors.zzz-archive-back-end.workers.dev/?url=${encodeURIComponent(url)}`);
+        const response = await fetch(
+          `https://cors.zzz-archive-back-end.workers.dev/?url=${encodeURIComponent(
+            url
+          )}`
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -130,12 +134,12 @@ export default {
           this.list = combinedData.map((item) => ({
             id: item.id,
             userId: item.userId,
-            imageUrl: `https://xxx.xxx.workers.dev/${item.url.replace(
+            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.url.replace(
               "https://i.pximg.net/",
               ""
             )}`,
             title: item.title,
-            authorAvatar: `https://xxx.xxx.workers.dev/${item.profileImageUrl.replace(
+            authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/${item.profileImageUrl.replace(
               "https://i.pximg.net/",
               ""
             )}`,
