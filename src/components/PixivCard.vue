@@ -61,7 +61,12 @@
                   :href="`https://www.pixiv.net/users/${item.userId}`"
                   target="_blank"
                 >
-                  <img :src="item.authorAvatar" alt="Avatar" />
+                  <v-img
+                    :src="item.authorAvatar"
+                    height="24"
+                    width="24"
+                    class="d-block mx-auto"
+                  />
                 </a>
               </v-avatar>
               <span class="ml-2 text-ellipsis">{{ item.authorName }}</span>
