@@ -132,7 +132,7 @@ export default {
         const queryString = new URLSearchParams(params).toString();
         const url = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
 
-        console.log("Fetching URL:", url);
+        //console.log("Fetching URL:", url);
         const response = await fetch(url, {
           headers: {
             "accept-language": "zh-TW", // 可以改為其他語言代碼

@@ -2,10 +2,12 @@
   <v-row>
     <v-col rounded="lg">
       <v-carousel
+        v-if="newsList.length > 0"
         height="300"
         show-arrows="hover"
         cycle
         hide-delimiter-background
+        ref="carousel"
       >
         <v-carousel-item v-for="(newsItem, i) in newsList" :key="i">
           <v-card flat tile rounded="xl">
@@ -36,7 +38,7 @@ export default {
     async fetchNewsData() {
       try {
         const response = await fetch(
-          "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://sg-public-api-static.hoyoverse.com/content_v2_user/app/3e9196a4b9274bd7/getContentList?iPageSize=3&iPage=1&iChanId=288&sLangKey=zh-tw"
+          "https://cloudflare-cors-anywhere.zzz-archive-back-end.workers.dev/?https://sg-public-api-static.hoyoverse.com/content_v2_user/app/3e9196a4b9274bd7/getContentList?iPageSize=5&iPage=1&iChanId=288&sLangKey=zh-tw"
         );
 
         if (!response.ok) {
@@ -50,6 +52,13 @@ export default {
           iInfoId: item.iInfoId,
           imageUrl: JSON.parse(item.sExt)["news-banner"][0].url,
         }));
+
+        // 手動觸發 v-carousel 的更新
+        this.$nextTick(() => {
+          if (this.$refs.carousel) {
+            this.$refs.carousel.update();
+          }
+        });
       } catch (error) {
         console.error("Error fetching news data:", error);
       }
