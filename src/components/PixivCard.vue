@@ -154,7 +154,7 @@ export default {
           this.list = combinedData.map((item) => ({
             id: item.id,
             userId: item.user.id,
-            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace(
+            imageUrl: `https://pximg-cors.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace(
               "https://i.pximg.net/",
               ""
             )}`,
@@ -163,7 +163,7 @@ export default {
               "https://s.pximg.net/common/images/no_profile.png"
             )
               ? item.user.profile_image_urls.medium
-              : `https://cors.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace(
+              : `https://pximg-cors.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace(
                   "https://i.pximg.net/",
                   ""
                 )}`,

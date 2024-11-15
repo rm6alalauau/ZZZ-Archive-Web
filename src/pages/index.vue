@@ -10,22 +10,7 @@
   <v-container>
     <v-row class="ga">
       <v-col cols="12" md="6">
-        <v-row>
-          <v-col rounded="lg">
-            <v-carousel
-              height="300"
-              show-arrows="hover"
-              cycle
-              hide-delimiter-background
-            >
-              <v-carousel-item v-for="(imageUrl, i) in imageUrls" :key="i">
-                <v-card flat tile rounded="xl">
-                  <v-img :src="imageUrl" max-height="300"></v-img>
-                </v-card>
-              </v-carousel-item>
-            </v-carousel>
-          </v-col>
-        </v-row>
+        <news />
         <v-row>
           <v-col>
             <v-card
