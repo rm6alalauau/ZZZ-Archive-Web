@@ -76,98 +76,113 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      list: [],
-      selectedOption: { title: "♡ 100+", value: "100+" },
-      options: [
-        { title: "♡ 100+", value: "100+" },
-        { title: "♡ 500+", value: "500+" },
-        { title: "♡ 1000+", value: "1000+" },
-      ],
-      showLeftShadow: false,
-      showRightShadow: true,
-    };
-  },
-  async mounted() {
-    await this.fetchPixivData();
-    this.handleScroll(); // 初始化時檢查滾動狀態
-  },
-  methods: {
-    onOptionChange() {
-      console.log("Option changed:", this.selectedOption);
-      this.fetchPixivData();
+  export default {
+    data() {
+      return {
+        list: [],
+        selectedOption: { title: "♡ 100+", value: "100+" },
+        options: [
+          { title: "♡ 100+", value: "100+" },
+          { title: "♡ 500+", value: "500+" },
+          { title: "♡ 1000+", value: "1000+" },
+        ],
+        showLeftShadow: false,
+        showRightShadow: true,
+      };
     },
-    async fetchPixivData() {
-      try {
-        let url;
-        switch (this.selectedOption.value) {
-          case "100+":
-            url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ100users入り?word=ゼンゼロ100users入り&mode=safe&lang=zh";
-            break;
-          case "500+":
-            url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ500users入り?word=ゼンゼロ500users入り&mode=safe&lang=zh";
-            break;
-          case "1000+":
-            url =
-              "https://www.pixiv.net/ajax/search/artworks/ゼンゼロ1000users入り?word=ゼンゼロ1000users入り&mode=safe&lang=zh";
-            break;
-        }
-        console.log("Fetching URL:", url);
-        const response = await fetch(
-          `https://cors.zzz-archive-back-end.workers.dev/?url=${encodeURIComponent(
-            url
-          )}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("API Response:", data);
+    async mounted() {
+      await this.fetchPixivData();
+      this.handleScroll(); // 初始化時檢查滾動狀態
+    },
+    methods: {
+      onOptionChange() {
+        console.log("Option changed:", this.selectedOption);
+        this.fetchPixivData();
+      },
+      async fetchPixivData() {
+        try {
+          let word;
+          switch (this.selectedOption.value) {
+            case "100+":
+              word = "ゼンゼロ100users入り";
+              break;
+            case "500+":
+              word = "ゼンゼロ500users入り";
+              break;
+            case "1000+":
+              word = "ゼンゼロ1000users入り";
+              break;
+          }
 
-        const combinedData = data.body.illustManga.data;
+          const params = {
+            word: word,
+            mode: "partial_match_for_tags", // 可以改為 "exact_match_for_tags" 或 "title_and_caption"
+            order: "date_desc", // 可以改為 "date_asc" 或 "popular_desc"
+            page: 1,
+            size: 500,
+            include_translated_tag_results: true,
+            search_ai_type: false,
+          };
 
-        if (combinedData.length > 0) {
-          this.list = combinedData.map((item) => ({
-            id: item.id,
-            userId: item.userId,
-            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.url.replace(
-              "https://i.pximg.net/",
-              ""
-            )}`,
-            title: item.title,
-            authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/${item.profileImageUrl.replace(
-              "https://i.pximg.net/",
-              ""
-            )}`,
-            authorName: item.userName,
-          }));
-        } else {
-          throw new Error("No data found");
+          const queryString = new URLSearchParams(params).toString();
+          const url = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
+
+          console.log("Fetching URL:", url);
+          const response = await fetch(url, {
+            headers: {
+              "accept-language": "zh-TW", // 可以改為其他語言代碼
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("API Response:", data);
+
+          const combinedData = data.illusts.filter(
+            (item) => item.sanity_level === 2
+          ); // 過濾掉sanity_level為4和6的內容
+
+          if (combinedData.length > 0) {
+            this.list = combinedData.map((item) => ({
+              id: item.id,
+              userId: item.user.id,
+              imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace(
+                "https://i.pximg.net/",
+                ""
+              )}`,
+              title: item.title,
+              authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace(
+                "https://i.pximg.net/",
+                ""
+              )}`,
+              authorName: item.user.name,
+            }));
+          } else {
+            throw new Error("No data found");
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      },
+      scrollLeft() {
+        const container = this.$refs.scrollContainer;
+        container.scrollBy({ left: -200, behavior: "smooth" });
+      },
+      scrollRight() {
+        const container = this.$refs.scrollContainer;
+        container.scrollBy({ left: 200, behavior: "smooth" });
+      },
+      handleScroll() {
+        const container = this.$refs.scrollContainer;
+        this.showLeftShadow = container.scrollLeft > 0;
+        this.showRightShadow =
+          container.scrollLeft + container.clientWidth < container.scrollWidth;
+      },
     },
-    scrollLeft() {
-      const container = this.$refs.scrollContainer;
-      container.scrollBy({ left: -200, behavior: "smooth" });
-    },
-    scrollRight() {
-      const container = this.$refs.scrollContainer;
-      container.scrollBy({ left: 200, behavior: "smooth" });
-    },
-    handleScroll() {
-      const container = this.$refs.scrollContainer;
-      this.showLeftShadow = container.scrollLeft > 0;
-      this.showRightShadow =
-        container.scrollLeft + container.clientWidth < container.scrollWidth;
-    },
-  },
-};
+  };
 </script>
 
 <style scoped>
