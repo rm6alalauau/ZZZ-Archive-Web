@@ -76,113 +76,117 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        list: [],
-        selectedOption: { title: "♡ 100+", value: "100+" },
-        options: [
-          { title: "♡ 100+", value: "100+" },
-          { title: "♡ 500+", value: "500+" },
-          { title: "♡ 1000+", value: "1000+" },
-        ],
-        showLeftShadow: false,
-        showRightShadow: true,
-      };
+export default {
+  data() {
+    return {
+      list: [],
+      selectedOption: { title: "♡ 100+", value: "100+" },
+      options: [
+        { title: "♡ 100+", value: "100+" },
+        { title: "♡ 500+", value: "500+" },
+        { title: "♡ 1000+", value: "1000+" },
+      ],
+      showLeftShadow: false,
+      showRightShadow: true,
+    };
+  },
+  async mounted() {
+    await this.fetchPixivData();
+    this.handleScroll(); // 初始化時檢查滾動狀態
+  },
+  methods: {
+    onOptionChange() {
+      console.log("Option changed:", this.selectedOption);
+      this.fetchPixivData();
     },
-    async mounted() {
-      await this.fetchPixivData();
-      this.handleScroll(); // 初始化時檢查滾動狀態
-    },
-    methods: {
-      onOptionChange() {
-        console.log("Option changed:", this.selectedOption);
-        this.fetchPixivData();
-      },
-      async fetchPixivData() {
-        try {
-          let word;
-          switch (this.selectedOption.value) {
-            case "100+":
-              word = "ゼンゼロ100users入り";
-              break;
-            case "500+":
-              word = "ゼンゼロ500users入り";
-              break;
-            case "1000+":
-              word = "ゼンゼロ1000users入り";
-              break;
-          }
-
-          const params = {
-            word: word,
-            mode: "partial_match_for_tags", // 可以改為 "exact_match_for_tags" 或 "title_and_caption"
-            order: "date_desc", // 可以改為 "date_asc" 或 "popular_desc"
-            page: 1,
-            size: 500,
-            include_translated_tag_results: true,
-            search_ai_type: false,
-          };
-
-          const queryString = new URLSearchParams(params).toString();
-          const url = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
-
-          console.log("Fetching URL:", url);
-          const response = await fetch(url, {
-            headers: {
-              "accept-language": "zh-TW", // 可以改為其他語言代碼
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("API Response:", data);
-
-          const combinedData = data.illusts.filter(
-            (item) => item.sanity_level === 2
-          ); // 過濾掉sanity_level為4和6的內容
-
-          if (combinedData.length > 0) {
-            this.list = combinedData.map((item) => ({
-              id: item.id,
-              userId: item.user.id,
-              imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace(
-                "https://i.pximg.net/",
-                ""
-              )}`,
-              title: item.title,
-              authorAvatar: `https://cors.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace(
-                "https://i.pximg.net/",
-                ""
-              )}`,
-              authorName: item.user.name,
-            }));
-          } else {
-            throw new Error("No data found");
-          }
-        } catch (error) {
-          console.error("Error fetching data:", error);
+    async fetchPixivData() {
+      try {
+        let word;
+        switch (this.selectedOption.value) {
+          case "100+":
+            word = "ゼンゼロ100users入り";
+            break;
+          case "500+":
+            word = "ゼンゼロ500users入り";
+            break;
+          case "1000+":
+            word = "ゼンゼロ1000users入り";
+            break;
         }
-      },
-      scrollLeft() {
-        const container = this.$refs.scrollContainer;
-        container.scrollBy({ left: -200, behavior: "smooth" });
-      },
-      scrollRight() {
-        const container = this.$refs.scrollContainer;
-        container.scrollBy({ left: 200, behavior: "smooth" });
-      },
-      handleScroll() {
-        const container = this.$refs.scrollContainer;
-        this.showLeftShadow = container.scrollLeft > 0;
-        this.showRightShadow =
-          container.scrollLeft + container.clientWidth < container.scrollWidth;
-      },
+
+        const params = {
+          word: word,
+          mode: "partial_match_for_tags", // 可以改為 "exact_match_for_tags" 或 "title_and_caption"
+          order: "date_desc", // 可以改為 "date_asc" 或 "popular_desc"
+          page: 1,
+          size: 500,
+          include_translated_tag_results: true,
+          search_ai_type: false,
+        };
+
+        const queryString = new URLSearchParams(params).toString();
+        const url = `https://api.obfs.dev/api/pixiv/search?${queryString}`;
+
+        console.log("Fetching URL:", url);
+        const response = await fetch(url, {
+          headers: {
+            "accept-language": "zh-TW", // 可以改為其他語言代碼
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        const combinedData = data.illusts.filter(
+          (item) => item.sanity_level === 2
+        ); // 過濾掉sanity_level為4和6的內容
+
+        if (combinedData.length > 0) {
+          this.list = combinedData.map((item) => ({
+            id: item.id,
+            userId: item.user.id,
+            imageUrl: `https://cors.zzz-archive-back-end.workers.dev/${item.image_urls.square_medium.replace(
+              "https://i.pximg.net/",
+              ""
+            )}`,
+            title: item.title,
+            authorAvatar: item.user.profile_image_urls.medium.includes(
+              "https://s.pximg.net/common/images/no_profile.png"
+            )
+              ? item.user.profile_image_urls.medium
+              : `https://cors.zzz-archive-back-end.workers.dev/${item.user.profile_image_urls.medium.replace(
+                  "https://i.pximg.net/",
+                  ""
+                )}`,
+            authorName: item.user.name,
+          }));
+        } else {
+          throw new Error("No data found");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     },
-  };
+    scrollLeft() {
+      const container = this.$refs.scrollContainer;
+      container.scrollBy({ left: -200, behavior: "smooth" });
+    },
+    scrollRight() {
+      const container = this.$refs.scrollContainer;
+      container.scrollBy({ left: 200, behavior: "smooth" });
+    },
+    handleScroll() {
+      const container = this.$refs.scrollContainer;
+      this.showLeftShadow = container.scrollLeft > 0;
+      this.showRightShadow =
+        container.scrollLeft + container.clientWidth < container.scrollWidth;
+    },
+  },
+};
 </script>
 
 <style scoped>
