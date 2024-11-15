@@ -10,7 +10,7 @@
   <v-container>
     <v-row class="ga">
       <v-col cols="12" md="6">
-        <news />
+        <News />
         <v-row>
           <v-col>
             <v-card
@@ -36,22 +36,7 @@
         <PixivCard />
       </v-col>
       <v-col cols="12" md="6">
-        <v-row justify="end">
-          <v-col>
-            <v-carousel
-              height="300"
-              show-arrows="hover"
-              cycle
-              hide-delimiter-background
-            >
-              <v-carousel-item v-for="(imageUrl, i) in imageUrls" :key="i">
-                <v-card flat tile rounded="xl">
-                  <v-img :src="imageUrl" max-height="300"></v-img>
-                </v-card>
-              </v-carousel-item>
-            </v-carousel>
-          </v-col>
-        </v-row>
+        <Bahamut />
         <v-row justify="end">
           <v-col>
             <v-card rounded="xl">
