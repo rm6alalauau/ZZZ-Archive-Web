@@ -37,7 +37,6 @@
       </v-col>
       <v-col cols="12" md="6">
         <Bahamut />
-        <Agent />
         <v-row justify="end">
           <v-col>
             <v-card rounded="xl">
