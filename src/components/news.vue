@@ -3,6 +3,7 @@
     <v-col rounded="lg">
       <v-carousel
         v-if="newsList.length > 0"
+        :key="carouselKey"
         height="300"
         show-arrows="hover"
         cycle
@@ -29,6 +30,7 @@ export default {
   data() {
     return {
       newsList: [],
+      carouselKey: 0,
     };
   },
   async mounted() {
@@ -53,12 +55,8 @@ export default {
           imageUrl: JSON.parse(item.sExt)["news-banner"][0].url,
         }));
 
-        // 手動觸發 v-carousel 的更新
-        this.$nextTick(() => {
-          if (this.$refs.carousel) {
-            this.$refs.carousel.update();
-          }
-        });
+        // 强制重新渲染 v-carousel
+        this.carouselKey += 1;
       } catch (error) {
         console.error("Error fetching news data:", error);
       }
