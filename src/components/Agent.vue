@@ -43,9 +43,9 @@ export default {
     };
   },
   async created() {
-    const response = await fetch("https://r2.zzz-archive-back-end.workers.dev");
+    const response = await fetch("/media/Live/Asset/Agent");
     const data = await response.json();
-    this.imageUrls = data.map((item) => item.url);
+    this.imageUrls = data.map((item) => `/media/Live/Asset/Agent/${item.name}`);
   },
 };
 </script>
