@@ -144,7 +144,7 @@ export default {
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
+        //console.log("API Response:", data);
 
         const combinedData = data.illusts.filter(
           (item) => item.sanity_level === 2

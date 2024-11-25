@@ -46,7 +46,7 @@ export default {
         }
 
         const data = await response.json();
-        console.log("API Response:", data);
+        //console.log("API Response:", data);
 
         this.newsList = data.data.list.map((item) => ({
           iInfoId: item.iInfoId,
