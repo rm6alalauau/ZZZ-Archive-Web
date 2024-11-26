@@ -9,8 +9,8 @@
 
   <v-container>
     <v-row class="ga">
-      <v-col cols="12" md="6">
-        <News />
+      <v-col cols="12" md="6" class="d-flex flex-column">
+        <News class="flex-grow-1" />
         <v-row>
           <v-col>
             <v-card
@@ -20,7 +20,9 @@
               rounded="xl"
             >
               <template v-slot:title>
-                <span style="font-size: 1rem; font-weight: bold">惡意課金玩家</span>
+                <span style="font-size: 1rem; font-weight: bold"
+                  >惡意課金玩家</span
+                >
               </template>
               <template v-slot:prepend>
                 <v-avatar size="48">
@@ -35,8 +37,8 @@
         </v-row>
         <PixivCard />
       </v-col>
-      <v-col cols="12" md="6">
-        <Bahamut />
+      <v-col cols="12" md="6" class="d-flex flex-column">
+        <Forums class="flex-grow-1" />
         <v-row justify="end">
           <v-col>
             <v-card rounded="xl">
@@ -196,3 +198,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.flex-grow-1 {
+  flex-grow: 1; /* 使組件填滿剩餘空間 */
+}
+</style>
