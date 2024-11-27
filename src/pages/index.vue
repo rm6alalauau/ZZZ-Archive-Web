@@ -4,7 +4,7 @@
     message="這是一個警告通知"
     :visible="warningVisible"
     @update:visible="warningVisible = $event"
-    url="https://github.com/mrfatworm/ZZZ-Archive-Asset"
+    url="https://github.com/mrfatworm/ZZZ-Archive"
   />
 
   <v-container>
