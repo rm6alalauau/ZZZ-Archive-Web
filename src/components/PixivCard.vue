@@ -103,6 +103,7 @@ export default {
     onOptionChange() {
       console.log("Option changed:", this.selectedOption);
       this.fetchPixivData();
+      this.$refs.scrollContainer.scrollLeft = 0; // 滾動到最左邊
     },
     async fetchPixivData() {
       try {
