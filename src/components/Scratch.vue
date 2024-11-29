@@ -4,7 +4,7 @@
       <v-card rounded="xl" class="position-relative scratch-card">
         <v-card-title
           class="headline"
-          style="font-size: 1rem; display: flex; align-items: center"
+          style="font-size: 1rem; font-weight: bold"
         >
           刮刮樂
         </v-card-title>
