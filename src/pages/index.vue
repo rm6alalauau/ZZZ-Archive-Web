@@ -11,30 +11,7 @@
     <v-row class="ga">
       <v-col cols="12" md="6" class="d-flex flex-column">
         <News class="flex-grow-1" />
-        <v-row>
-          <v-col>
-            <v-card
-              rel="noopener"
-              subtitle="Asia．UID 00000001"
-              target="_blank"
-              rounded="xl"
-            >
-              <template v-slot:title>
-                <span style="font-size: 1rem; font-weight: bold"
-                  >惡意課金玩家</span
-                >
-              </template>
-              <template v-slot:prepend>
-                <v-avatar size="48">
-                  <v-img
-                    src="//placehold.it/48x48"
-                    style="height: 48px; width: 48px"
-                  ></v-img>
-                </v-avatar>
-              </template>
-            </v-card>
-          </v-col>
-        </v-row>
+        <Profile />
         <PixivCard />
         <Scratch />
       </v-col>
