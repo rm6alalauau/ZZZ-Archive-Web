@@ -94,10 +94,11 @@ export default {
       try {
         const response = await fetch(apiUrl);
         const data = await response.json();
+        console.log(data); // 檢查 API 回應的資料
         this.apiData = {
-          region: data.region,
-          gameRoleId: data.gameRoleId,
-          nickname: data.nickname,
+          region: data.data.region,
+          gameRoleId: data.data.gameRoleId,
+          nickname: data.data.nickname,
         };
       } catch (error) {
         console.error("Error fetching API data:", error);
