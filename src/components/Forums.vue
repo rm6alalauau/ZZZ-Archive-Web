@@ -46,7 +46,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* 添加一些樣式來美化選單和佈局 */
-</style>
