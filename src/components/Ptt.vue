@@ -18,27 +18,14 @@
 
 <script>
 export default {
-  name: "NGAList",
-  data() {
-    return {
-      items: [],
-    };
-  },
-  mounted() {
-    this.fetchData();
+  name: "PTTList",
+  props: {
+    items: {
+      type: Array,
+      required: true,
+    },
   },
   methods: {
-    async fetchData() {
-      try {
-        const response = await fetch(
-          "https://script.google.com/macros/s/AKfycbx2fQc_sDvU_eh9tsM8ZJEIfRWUTHim_v3VYklE_wn76yfhYtk8-z1E7JppOPSnA-Qx/exec?sheetName=PTT"
-        );
-        const data = await response.json();
-        this.items = data;
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    },
     navigateTo(link) {
       window.open(link, "_blank");
     },
