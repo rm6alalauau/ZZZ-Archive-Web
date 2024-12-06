@@ -1,13 +1,16 @@
 <template>
-  <v-row>
+  <v-row justify="center">
     <v-col>
-      <v-card rounded="xl" class="position-relative scratch-card">
+      <v-card rounded="xl" class="scratch-card">
+        <!-- 標題 -->
         <v-card-title
           class="headline"
-          style="font-size: 1rem; font-weight: bold"
+          style="font-size: 1rem; font-weight: bold; text-align: left"
         >
           刮刮樂
         </v-card-title>
+
+        <!-- 刮刮樂內容 -->
         <v-card-text>
           <div class="scratch-container" ref="scratchContainer">
             <!-- 背景圖層 -->
@@ -64,23 +67,49 @@ export default {
       img.src = this.selectedImage;
 
       img.onload = () => {
-        const containerWidth = this.$refs.scratchContainer.clientWidth;
-        const scale = containerWidth / img.width;
+        this.resizeCanvas(
+          img,
+          backgroundCanvas,
+          scratchCanvas,
+          bgCtx,
+          scratchCtx
+        );
 
-        backgroundCanvas.width = containerWidth;
-        backgroundCanvas.height = img.height * scale;
-        scratchCanvas.width = containerWidth;
-        scratchCanvas.height = img.height * scale;
-
-        // 設置容器高度以適應圖片
-        this.$refs.scratchContainer.style.height = `${img.height * scale}px`;
-
-        // 繪製背景圖片
-        bgCtx.drawImage(img, 0, 0, containerWidth, img.height * scale);
-
-        // 初始化塗層
-        this.drawOverlay(scratchCtx, containerWidth, img.height * scale);
+        // 監聽窗口大小變化
+        window.addEventListener("resize", () => {
+          this.resizeCanvas(
+            img,
+            backgroundCanvas,
+            scratchCanvas,
+            bgCtx,
+            scratchCtx
+          );
+        });
       };
+    },
+
+    resizeCanvas(img, backgroundCanvas, scratchCanvas, bgCtx, scratchCtx) {
+      const containerWidth = this.$refs.scratchContainer.clientWidth;
+
+      // 計算畫布寬高比例
+      const scale = Math.min(containerWidth / img.width, 320 / img.height);
+      const canvasWidth = img.width * scale;
+      const canvasHeight = img.height * scale;
+
+      backgroundCanvas.width = canvasWidth;
+      backgroundCanvas.height = canvasHeight;
+      scratchCanvas.width = canvasWidth;
+      scratchCanvas.height = canvasHeight;
+
+      // 設置容器高度
+      this.$refs.scratchContainer.style.height = `${canvasHeight}px`;
+
+      // 清理並繪製背景圖片
+      bgCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+      bgCtx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+      // 初始化刮刮樂覆蓋層
+      this.drawOverlay(scratchCtx, canvasWidth, canvasHeight);
     },
     drawOverlay(ctx, width, height) {
       const overlay = new Image();
@@ -144,25 +173,28 @@ export default {
 
 <style scoped>
 .scratch-card {
-  overflow: visible;
-  height: auto;
+  margin: auto; /* 卡片居中 */
 }
+
 .scratch-container {
   position: relative;
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  margin: auto;
 }
+
 canvas {
-  width: 100%;
+  width: 100%; /* 畫布適應容器 */
   height: auto;
   border: 1px solid #ccc;
 }
+
 .background-canvas {
   position: absolute;
   z-index: 1;
 }
+
 .scratch-canvas {
   position: absolute;
   z-index: 2;
