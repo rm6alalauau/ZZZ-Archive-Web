@@ -1,29 +1,27 @@
 <template>
-  <v-container>
-    <v-row>
+  <v-row>
+    <v-col>
       <component :is="selectedComponent" :items="items[selectedComponent]" />
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-chip-group v-model="selectedComponent" column mandatory>
-          <v-chip
-            v-for="component in components"
-            :key="component.value"
-            :value="component.value"
-            variant="outlined"
-          >
-            {{ component.text }}
-          </v-chip>
-        </v-chip-group>
-      </v-col>
-    </v-row>
-  </v-container>
+      <v-chip-group v-model="selectedComponent" column mandatory>
+        <v-chip
+          v-for="component in components"
+          :key="component.value"
+          :value="component.value"
+          variant="outlined"
+        >
+          {{ component.text }}
+        </v-chip>
+      </v-chip-group>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import Bahamut from "./Bahamut.vue";
 import NGAList from "./Nga.vue";
 import PTTList from "./Ptt.vue";
+import XPosts from "./X.vue";
+import RedditPosts from "./Reddit.vue";
 
 export default {
   name: "ParentComponent",
@@ -31,6 +29,8 @@ export default {
     Bahamut,
     NGAList,
     PTTList,
+    XPosts,
+    RedditPosts,
   },
   data() {
     return {
@@ -39,11 +39,15 @@ export default {
         { text: "巴哈", value: "Bahamut" },
         { text: "NGA", value: "NGAList" },
         { text: "PTT", value: "PTTList" },
+        { text: "X", value: "XPosts" },
+        { text: "Reddit", value: "RedditPosts" },
       ],
       items: {
         Bahamut: [],
         NGAList: [],
         PTTList: [],
+        XPosts: [],
+        RedditPosts: [],
       },
     };
   },
@@ -61,6 +65,8 @@ export default {
         this.items.Bahamut = data.baha;
         this.items.NGAList = data.nga;
         this.items.PTTList = data.ptt;
+        this.items.XPosts = data.x;
+        this.items.RedditPosts = data.reddit;
 
         // 保存資料到 localStorage
         this.saveItemsToLocalStorage();

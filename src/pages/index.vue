@@ -158,21 +158,6 @@
 <script>
 export default {
   data() {
-    return {
-      imageUrls: [
-        "https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg",
-        "https://cdn.vuetifyjs.com/images/carousel/sky.jpg",
-      ],
-      list: [
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-        "https://placehold.it/100x100",
-      ],
-    };
   },
 };
 </script>
