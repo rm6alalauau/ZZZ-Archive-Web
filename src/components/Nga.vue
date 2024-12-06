@@ -28,6 +28,7 @@ export default {
     };
   },
   mounted() {
+    this.loadItemsFromLocalStorage();
     this.fetchData();
   },
   methods: {
@@ -38,12 +39,32 @@ export default {
         );
         const data = await response.json();
         this.items = data;
+        this.saveItemsToLocalStorage();
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     },
     navigateTo(link) {
       window.open(link, "_blank");
+    },
+    saveItemsToLocalStorage() {
+      const data = {
+        items: this.items,
+        timestamp: new Date().getTime(),
+      };
+      localStorage.setItem("ngaItemsData", JSON.stringify(data));
+    },
+    loadItemsFromLocalStorage() {
+      const data = JSON.parse(localStorage.getItem("ngaItemsData"));
+      if (data) {
+        const currentTime = new Date().getTime();
+        const expiryTime = 4 * 60 * 60 * 1000; // 4小時
+        if (currentTime - data.timestamp < expiryTime) {
+          this.items = data.items;
+        } else {
+          localStorage.removeItem("ngaItemsData");
+        }
+      }
     },
   },
 };
