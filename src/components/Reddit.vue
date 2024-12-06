@@ -29,20 +29,31 @@
             style="width: 160px"
           >
             <a :href="item.link" target="_blank">
-              <v-img
-                v-if="item.image"
-                :src="item.image"
-                height="160"
-                width="160"
-                class="d-block mx-auto"
-              ></v-img>
-              <v-img
-                v-else
-                :src="generatePlaceholderImage(item.title)"
-                height="160"
-                width="160"
-                class="d-block mx-auto"
-              ></v-img>
+              <template v-if="isVideo(item.image)">
+                <video
+                  :src="item.image"
+                  height="160"
+                  width="160"
+                  class="d-block mx-auto"
+                  controls
+                ></video>
+              </template>
+              <template v-else>
+                <v-img
+                  v-if="item.image"
+                  :src="item.image"
+                  height="160"
+                  width="160"
+                  class="d-block mx-auto"
+                ></v-img>
+                <v-img
+                  v-else
+                  :src="generatePlaceholderImage(item.title)"
+                  height="160"
+                  width="160"
+                  class="d-block mx-auto"
+                ></v-img>
+              </template>
             </a>
             <div class="text-ellipsis">{{ item.title }}</div>
             <div class="d-flex align-items-center">
@@ -75,11 +86,35 @@ export default {
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = "#ccc";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ctx.fillStyle = "#000";
-      ctx.font = "20px Arial";
+      ctx.font = "16px Arial";
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+      // 將字串分行
+      const maxWidth = 140; // 字串顯示的最大寬度
+      const lineHeight = 18; // 行高
+      const words = text.split(" ");
+      let line = "";
+      const lines = [];
+      words.forEach((word) => {
+        const testLine = line + word + " ";
+        const testWidth = ctx.measureText(testLine).width;
+        if (testWidth > maxWidth) {
+          lines.push(line);
+          line = word + " ";
+        } else {
+          line = testLine;
+        }
+      });
+      lines.push(line);
+
+      // 將每行字串繪製到 canvas 中
+      const yOffset = (canvas.height - lines.length * lineHeight) / 2;
+      lines.forEach((line, index) => {
+        ctx.fillText(line, canvas.width / 2, yOffset + index * lineHeight);
+      });
+
       return canvas.toDataURL();
     },
     scrollLeft() {
@@ -95,6 +130,12 @@ export default {
       this.showLeftShadow = container.scrollLeft > 0;
       this.showRightShadow =
         container.scrollLeft + container.clientWidth < container.scrollWidth;
+    },
+    isVideo(url) {
+      // 判斷是否為影片連結
+      const videoExtensions = ["mp4", "webm", "ogg"];
+      const extension = url.split(".").pop().toLowerCase();
+      return videoExtensions.includes(extension);
     },
   },
 };
