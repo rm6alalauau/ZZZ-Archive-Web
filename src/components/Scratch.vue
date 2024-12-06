@@ -156,7 +156,6 @@ export default {
 }
 canvas {
   width: 100%;
-  max-width: 500px;
   height: auto;
   border: 1px solid #ccc;
 }
