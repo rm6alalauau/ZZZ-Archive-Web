@@ -110,7 +110,7 @@ export default {
         let word;
         switch (this.selectedOption.value) {
           case "100+":
-            word = "ゼンゼロ";
+            word = "ゼンゼロ100users入り";
             break;
           case "500+":
             word = "ゼンゼロ500users入り";

@@ -28,6 +28,9 @@
             class="d-inline-block mx-2 text-left"
             style="width: 160px"
           >
+            <!-- 標題放在圖片上方 -->
+            <div class="text-ellipsis mb-1">{{ item.title }}</div>
+            <!-- 圖片 -->
             <a :href="item.link" target="_blank">
               <v-img
                 :src="item.image || generatePlaceholderImage(item.title)"
@@ -36,8 +39,24 @@
                 class="d-block mx-auto"
               ></v-img>
             </a>
-            <div class="text-ellipsis">{{ item.title }}</div>
-            <div class="text-ellipsis">{{ item.hashtag }}</div>
+            <!-- 作者名稱和 Icon -->
+            <div class="author-section mt-1">
+              <v-icon
+                class="author-icon"
+                small
+                @click="openAuthorProfile(item.authorProfile)"
+              >
+                mdi-account
+              </v-icon>
+              <span
+                class="text-ellipsis author-name"
+                @click="openAuthorProfile(item.authorProfile)"
+              >
+                {{ item.author }}
+              </span>
+            </div>
+            <!-- Hashtag -->
+            <div class="text-ellipsis mt-1">{{ item.hashtag }}</div>
           </div>
         </div>
       </v-card>
@@ -66,8 +85,25 @@ export default {
       ctx.font = "20px Arial";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+      this.wrapText(ctx, text, canvas.width / 2, canvas.height / 2, 150, 22);
       return canvas.toDataURL();
+    },
+    wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(" ");
+      let line = "";
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + " ";
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line, x, y);
+          line = words[n] + " ";
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, y);
     },
     scrollLeft() {
       const container = this.$refs.scrollContainer;
@@ -83,17 +119,49 @@ export default {
       this.showRightShadow =
         container.scrollLeft + container.clientWidth < container.scrollWidth;
     },
+    openAuthorProfile(url) {
+      if (url) {
+        window.open(url, "_blank");
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+.author-section {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Icon 與文字間距 */
+  cursor: pointer;
+}
+
+.author-icon {
+  color: #5c8a10;
+  cursor: pointer;
+}
+
+.author-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px; /* 限制名稱寬度 */
+}
 .text-ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 150px;
 }
+
+.mb-1 {
+  margin-bottom: 4px;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
 .scroll-container {
   display: flex;
   overflow-x: auto;

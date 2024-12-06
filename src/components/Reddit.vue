@@ -132,9 +132,12 @@ export default {
         container.scrollLeft + container.clientWidth < container.scrollWidth;
     },
     isVideo(url) {
-      // 判斷是否為影片連結
+      if (!url) return false;
+      // 去除查詢參數的部分
+      const cleanUrl = url.split("?")[0];
+      // 支援的影片副檔名
       const videoExtensions = ["mp4", "webm", "ogg"];
-      const extension = url.split(".").pop().toLowerCase();
+      const extension = cleanUrl.split(".").pop().toLowerCase();
       return videoExtensions.includes(extension);
     },
   },
