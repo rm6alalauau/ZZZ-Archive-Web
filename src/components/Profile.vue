@@ -7,16 +7,18 @@
           backgroundImage: apiData.card
             ? `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7)), url(${apiData.card})`
             : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+          backgroundSize: apiData.card ? 'cover' : 'initial',
+          backgroundPosition: apiData.card ? 'center' : 'initial',
+          backgroundRepeat: apiData.card ? 'no-repeat' : 'initial',
         }"
       >
         <!-- 標題 -->
         <v-card-title
           class="headline"
           :style="{
-            backgroundImage: `linear-gradient(#${apiData.mainColor || 'f58661'}, #${apiData.bottomColor || 'fe357b'})`,
+            backgroundImage: `linear-gradient(#${
+              apiData.mainColor || 'f58661'
+            }, #${apiData.bottomColor || 'fe357b'})`,
             color: 'transparent',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
@@ -31,7 +33,12 @@
         <!-- 卡片內容 -->
         <v-card-text>
           <!-- 表單 -->
-          <v-form ref="form" v-model="valid" v-if="!isSubmitted" variant="outlined">
+          <v-form
+            ref="form"
+            v-model="valid"
+            v-if="!isSubmitted"
+            variant="outlined"
+          >
             <v-text-field
               v-model="ltoken_v2"
               :rules="[(v) => !!v || 'This field is required']"
@@ -100,7 +107,6 @@
     </v-col>
   </v-row>
 </template>
-
 
 <script>
 export default {
@@ -220,31 +226,8 @@ export default {
 
       this.isSubmitted = false;
       this.apiData = null;
-    },
-    clearLocalStorage() {
-      localStorage.clear(); // 清除所有 localStorage 資料
-      this.ltoken_v2 = "";
-      this.ltuid_v2 = "";
-      this.apiData = null;
-      alert("localStorage 已清除！");
       location.reload(); // 避免殘留狀態，刷新頁面
     },
-  },
-  mounted() {
-    // 添加鍵盤快捷鍵事件監聽
-    window.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.altKey && e.code === "KeyC") {
-        this.clearLocalStorage();
-      }
-    });
-  },
-  beforeDestroy() {
-    // 移除鍵盤快捷鍵事件監聽
-    window.removeEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.altKey && e.code === "KeyC") {
-        this.clearLocalStorage();
-      }
-    });
   },
 };
 </script>
