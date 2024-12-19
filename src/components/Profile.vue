@@ -70,7 +70,7 @@
                 >
                   <template v-slot:title>
                     <span style="font-size: 1rem; font-weight: bold">
-                      {{ apiData.nickname || "我知道你很急" }}
+                      {{ apiData.nickname || "Loading" }}
                     </span>
                   </template>
                   <template v-slot:prepend>
@@ -88,8 +88,8 @@
                     >
                       <v-icon class="mr-1" color="yellow">mdi-flash</v-icon>
                       <span>
-                        {{ apiData.currentEnergy || "急急急急" }} /
-                        {{ apiData.maxEnergy || "我是急急國王" }}
+                        {{ apiData.currentEnergy || "Loading" }} /
+                        {{ apiData.maxEnergy || "Loading" }}
                       </span>
                     </v-row>
                   </template>
@@ -122,8 +122,8 @@ export default {
   },
   computed: {
     loadingSubtitle() {
-      const region = this.apiData?.region || "但是你...";
-      const gameRoleId = this.apiData?.gameRoleId || "先別急...";
+      const region = this.apiData?.region || "Loading...";
+      const gameRoleId = this.apiData?.gameRoleId || "Loading...";
       return `${region}．UID ${gameRoleId}`;
     },
   },
