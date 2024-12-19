@@ -12,144 +12,16 @@
       <v-col cols="12" md="6" class="d-flex flex-column">
         <News class="flex-grow-1" />
         <Profile />
+        <ImageCard />
         <PixivCard />
         <Scratch />
       </v-col>
       <v-col cols="12" md="6" class="d-flex flex-column">
         <Forums class="flex-grow-1" />
-        <v-row justify="end">
-          <v-col>
-            <v-card rounded="xl">
-              <v-card-title
-                class="headline"
-                style="font-size: 1rem; font-weight: bold"
-                >代理人</v-card-title
-              >
-              <div
-                style="
-                  overflow-x: auto;
-                  white-space: nowrap;
-                  scrollbar-width: thin;
-                  scrollbar-color: #5c8a10 #000000;
-                "
-              >
-                <div
-                  v-for="(imageUrl, i) in list"
-                  :key="i"
-                  class="d-inline-block mx-2 text-center"
-                >
-                  <v-img
-                    :src="imageUrl"
-                    height="100"
-                    width="100"
-                    class="d-block mx-auto"
-                  ></v-img>
-                  <div>{{ i + 1 }}</div>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row justify="end">
-          <v-col>
-            <v-card rounded="xl">
-              <v-card-title
-                class="headline"
-                style="font-size: 1rem; font-weight: bold"
-                >音擎</v-card-title
-              >
-              <div
-                style="
-                  overflow-x: auto;
-                  white-space: nowrap;
-                  scrollbar-width: thin;
-                  scrollbar-color: #5c8a10 #000000;
-                "
-              >
-                <div
-                  v-for="(imageUrl, i) in list"
-                  :key="i"
-                  class="d-inline-block mx-2 text-center"
-                >
-                  <v-img
-                    :src="imageUrl"
-                    height="100"
-                    width="100"
-                    class="d-block mx-auto"
-                  ></v-img>
-                  <div>{{ i + 1 }}</div>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row justify="end">
-          <v-col>
-            <v-card rounded="xl">
-              <v-card-title
-                class="headline"
-                style="font-size: 1rem; font-weight: bold"
-                >邦布</v-card-title
-              >
-              <div
-                style="
-                  overflow-x: auto;
-                  white-space: nowrap;
-                  scrollbar-width: thin;
-                  scrollbar-color: #5c8a10 #000000;
-                "
-              >
-                <div
-                  v-for="(imageUrl, i) in list"
-                  :key="i"
-                  class="d-inline-block mx-2 text-center"
-                >
-                  <v-img
-                    :src="imageUrl"
-                    height="100"
-                    width="100"
-                    class="d-block mx-auto"
-                  ></v-img>
-                  <div>{{ i + 1 }}</div>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row justify="end">
-          <v-col>
-            <v-card rounded="xl">
-              <v-card-title
-                class="headline"
-                style="font-size: 1rem; font-weight: bold"
-                >驅動光碟</v-card-title
-              >
-              <div
-                style="
-                  overflow-x: auto;
-                  white-space: nowrap;
-                  scrollbar-width: thin;
-                  scrollbar-color: #5c8a10 #000000;
-                "
-              >
-                <div
-                  v-for="(imageUrl, i) in list"
-                  :key="i"
-                  class="d-inline-block mx-2 text-center"
-                >
-                  <v-img
-                    :src="imageUrl"
-                    height="100"
-                    width="100"
-                    class="d-block mx-auto"
-                  ></v-img>
-                  <div>{{ i + 1 }}</div>
-                </div>
-              </div>
-            </v-card>
-          </v-col>
-        </v-row>
-        <!--<ImageCard title="代理人" />-->
+        <ImageCard category="Agent" filterBy="IconRoleCircle" />
+        <ImageCard category="Bangboo" filterBy="540" />
+        <ImageCard category="W-Engine" filterBy="Big" />
+        <ImageCard category="Driver" filterBy="Big" />
       </v-col>
     </v-row>
   </v-container>

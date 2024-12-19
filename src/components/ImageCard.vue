@@ -4,9 +4,9 @@
       <v-card rounded="xl">
         <v-card-title
           class="headline"
-          :style="{ fontSize: '1rem', fontWeight: 'bold' }"
+          style="font-size: 1rem; font-weight: bold"
         >
-          {{ title }}
+          {{ category }}
         </v-card-title>
         <div
           style="
@@ -17,17 +17,17 @@
           "
         >
           <div
-            v-for="(imageUrl, i) in images"
+            v-for="(image, i) in filteredList"
             :key="i"
             class="d-inline-block mx-2 text-center"
           >
             <v-img
-              :src="imageUrl"
+              :src="image.url"
               height="100"
               width="100"
               class="d-block mx-auto"
             ></v-img>
-            <div>{{ i + 1 }}</div>
+            <div>{{ image.name }}</div>
           </div>
         </div>
       </v-card>
@@ -36,40 +36,73 @@
 </template>
 
 <script>
-import axios from "axios";
+import jsonData from "@/assets/img.json";
 
 export default {
   name: "ImageCard",
   props: {
-    title: {
+    category: {
       type: String,
       required: true,
+    },
+    filterBy: {
+      type: String,
+      default: null,
     },
   },
   data() {
     return {
-      images: [],
+      json: jsonData,
+      baseUrl: "https://pub-0d4bc7637d714b47b1b7ccc2de0275e1.r2.dev/",
     };
   },
-  created() {
-    this.fetchImages();
-  },
-  methods: {
-    async fetchImages() {
-      try {
-        const response = await axios.get(
-          "https://6fa37c23baabdfc16d2414746d5854b6.r2.cloudflarestorage.com/asset/Live/Asset/Agent/Profile/",
-          {
-            headers: {
-              Authorization: `Bearer rZwbu11Rpj8hQC91PD5_QZe6voRFc0_XxGqcICdI`,
-            },
+  computed: {
+    filteredList() {
+      const categoryData = this.json[this.category];
+
+      if (!categoryData) return [];
+
+      let allImages = [];
+
+      if (Array.isArray(categoryData)) {
+        // Handle array structure
+        for (const item of categoryData) {
+          if (item.img) {
+            allImages.push(
+              ...item.img.map((img) => ({
+                url: `${this.baseUrl}${this.category}/${item.name}/${img}.webp`,
+                name: img,
+              }))
+            );
           }
-        );
-        // 假設 API 返回的數據中包含圖片 URL
-        this.images = response.data.map((item) => item.url);
-      } catch (error) {
-        console.error("Error fetching images:", error);
+        }
+      } else if (categoryData.img) {
+        // Handle direct img array structure
+        allImages = categoryData.img.map((img) => ({
+          url: `${this.baseUrl}${this.category}/${img}.webp`,
+          name: img,
+        }));
+      } else {
+        // Handle nested object structure
+        for (const key in categoryData) {
+          if (categoryData[key].img) {
+            allImages.push(
+              ...categoryData[key].img.map((img) => ({
+                url: `${this.baseUrl}${this.category}/${key}/${img}.webp`,
+                name: img,
+              }))
+            );
+          }
+        }
       }
+
+      // Apply filtering if filterBy is provided
+      if (this.filterBy) {
+        const regex = new RegExp(this.filterBy, "i");
+        return allImages.filter((image) => regex.test(image.url));
+      }
+
+      return allImages;
     },
   },
 };
