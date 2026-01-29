@@ -18,7 +18,6 @@
           class="d-flex overflow-x-auto px-4 pb-4 cursor-grab"
           :class="{'cursor-grabbing': isDragging}"
           style="scroll-behavior: auto; gap: 12px; scrollbar-width: none;"
-          @wheel.prevent="onWheel"
           @mousedown="startDrag"
           @mouseleave="stopDrag"
           @mouseup="stopDrag"
@@ -35,14 +34,14 @@
                  <div class="position-relative w-100 rounded-lg overflow-hidden" style="aspect-ratio: 1/1;">
                      <!-- Blurred Background Layer -->
                      <v-img
-                        :src="item.image || '//placehold.it/144x144'"
+                        :src="item.image || 'https://placehold.co/144x144'"
                         cover
                         class="fill-height filter-blur"
                         draggable="false"
                      ></v-img>
                      <!-- Main Image Layer -->
                      <v-img
-                        :src="item.image || '//placehold.it/144x144'"
+                        :src="item.image || 'https://placehold.co/144x144'"
                         class="position-absolute top-0 left-0 fill-height w-100"
                         style="object-fit: contain;"
                         draggable="false"
@@ -116,11 +115,6 @@ export default {
              // Support both direct array or wrapped api response
              this.items = Array.isArray(data) ? data : (data.x || []);
           } catch(e) { console.error(e) }
-      },
-      onWheel(e) {
-          if (this.$refs.scrollContainer) {
-              this.$refs.scrollContainer.scrollLeft += e.deltaY;
-          }
       },
       startDrag(e) {
           this.isDragging = true;

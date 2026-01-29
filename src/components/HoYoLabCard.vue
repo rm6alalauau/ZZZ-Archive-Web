@@ -36,7 +36,7 @@
                 <!-- Player Info -->
                 <div class="d-flex align-center" style="gap: 12px; overflow: hidden;">
                     <v-avatar size="48" class="flex-shrink-0" style="border: 2px solid white">
-                         <v-img :src="apiData.hasAccount && apiData.icon ? apiData.icon : '//placehold.it/48x48'"></v-img>
+                         <v-img :src="apiData.hasAccount && apiData.icon ? apiData.icon : 'https://placehold.co/48x48'"></v-img>
                     </v-avatar>
                     <div class="d-flex flex-column" style="min-width: 0;">
                         <!-- Name with simulated outline -->
