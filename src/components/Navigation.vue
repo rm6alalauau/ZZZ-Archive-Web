@@ -1,194 +1,195 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    v-if="drawer"
-    :class="[
-      'ml-2',
-      'border-lg',
-      { 'rounded-xl': rail, 'rounded-pill': !rail },
-    ]"
-    :rail="!rail"
-    :style="{
-      width: rail ? '240px' : '65px',
-      height: '98vh',
-      marginTop: 'calc((100vh - 98vh) / 2)',
-    }"
+    :rail="rail"
+    rail-width="72"
+    width="280"
+    class="border-0 rounded-e-xl"
+    color="surface-container"
     permanent
+    style="height: 100vh; position: fixed; z-index: 1000;"
   >
-    <v-list-item
-      :class="[{ 'd-flex justify-center': !rail }]"
-      title="ZZZ ARCHIVE"
-      nav
-    >
-      <template v-slot:append>
-        <v-btn icon variant="text" @click.stop="rail = !rail">
-          <v-icon>{{ !rail ? "mdi-menu" : "mdi-backburger" }}</v-icon>
-        </v-btn>
-      </template>
-    </v-list-item>
+    <div class="d-flex flex-column h-100">
+      <!-- Header: ZZZ ARCHIVE + Back Icon -->
+      <div class="d-flex align-center justify-space-between pl-4 pr-3 pt-4 pb-2">
+         <div v-if="!rail" class="text-subtitle-2 font-weight-bold text-on-surface-variant tracking-wider">
+           ZZZ ARCHIVE
+         </div>
+         <v-btn icon variant="text" density="comfortable" @click.stop="toggleRail">
+             <v-icon color="on-surface-variant">
+               <svg v-if="rail" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3,6H21V8H3V6ZM3,11H21V13H3V11ZM3,16H21V18H3V16Z" /></svg>
+               <svg v-else viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path :d="icons.navBack" /></svg>
+             </v-icon>
+         </v-btn>
+      </div>
 
-    <!-- 動態生成的列表項目，包括子標題 -->
-    <v-list dense nav>
-      <template v-for="(item, index) in menuItems" :key="item.value">
-        <v-divider :thickness="3" v-if="rail && index > 0"></v-divider>
-        <v-list-item
-          :prepend-icon="item.icon"
-          :title="item.title"
-          @click="selectItem(item)"
-        ></v-list-item>
-      </template>
-    </v-list>
+      <!-- Main Navigation Items -->
+      <div class="px-3 d-flex flex-column gap-1 pt-2">
+        <template v-for="(item, index) in menuItems" :key="item.value">
+           <v-list-item
+            :value="item.value"
+            @click="selectItem(item)"
+            rounded="pill"
+            :active="isRouteActive(item.value)"
+            active-class="bg-primary-container text-on-primary-container"
+            color="on-primary-container"
+            class="mb-1"
+            density="comfortable"
+          >
+             <template v-slot:prepend>
+                <v-icon :color="isRouteActive(item.value) ? 'on-primary-container' : 'on-surface-variant'">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path :d="item.path" />
+                  </svg>
+                </v-icon>
+             </template>
+             <v-list-item-title :class="isRouteActive(item.value) ? 'font-weight-bold' : ''" class="text-subtitle-2">{{ item.title }}</v-list-item-title>
+          </v-list-item>
+          <v-divider v-if="index === menuItems.length - 1" class="my-2"></v-divider>
+        </template>
+      </div>
+
+      <v-spacer></v-spacer>
+
+      <!-- Bottom Actions (Theme Toggle) -->
+      <div class="px-3 pb-4 mt-auto">
+          <v-list-item
+            rounded="pill"
+            @click="toggleTheme"
+            class="mb-1"
+            density="comfortable"
+          >
+             <template v-slot:prepend>
+                <v-icon color="on-surface-variant">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                    <path :d="theme.global.current.value.dark ? icons.sun : icons.moon" />
+                  </svg>
+                </v-icon>
+             </template>
+             <v-list-item-title class="text-subtitle-2 text-on-surface-variant">
+                {{ t(theme.global.current.value.dark ? 'light_theme' : 'dark_theme') }}
+             </v-list-item-title>
+          </v-list-item>
+      </div>
+    </div>
   </v-navigation-drawer>
 
-  <v-bottom-navigation grow v-if="showBottomNav" :active="active">
+  <!-- Mobile Bottom Nav -->
+  <v-bottom-navigation
+    app
+    grow
+    v-if="showBottomNav"
+    :active="active"
+    color="primary"
+    style="position: fixed !important; bottom: 0; left: 0; z-index: 1006; width: 100%;"
+  >
     <v-btn
       v-for="item in buttomitem"
       :key="item.value"
       @click="selectItem(item)"
     >
-      <v-icon>{{ item.icon }}</v-icon>
+      <v-icon>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+           <path :d="item.path" />
+        </svg>
+      </v-icon>
       {{ item.title }}
     </v-btn>
   </v-bottom-navigation>
 </template>
 
-<script>
-import { onMounted, onBeforeUnmount, ref } from "vue";
-import { useDisplay } from "vuetify";
+<script setup>
+import { onMounted, onBeforeUnmount, ref, computed } from "vue";
+import { useDisplay, useTheme } from "vuetify";
+import { useRoute, useRouter } from "vue-router";
+import { useLocalization, useGlobalTheme } from '@/composables/useLocalization';
 
-export default {
-  setup() {
-    const { width, height } = useDisplay();
-    const drawer = ref(false);
-    const rail = ref(true);
-    const railIcon = ref("mdi-menu");
-    const showBottomNav = ref(false);
+const { width } = useDisplay();
+const theme = useTheme();
+const route = useRoute();
+const router = useRouter();
 
-    // 切換rail狀態
-    const toggleRail = () => {
-      rail.value = !rail.value;
-    };
+const { setTheme } = useGlobalTheme();
 
-    // 大小變
-    const handleResize = () => {
-      if (width.value > 840) {
-        if (height.value <= 600) {
-          drawer.value = false; // 大於840
-          rail.value = false;
-          showBottomNav.value = true;
-        } else {
-          drawer.value = true;
-          rail.value = true;
-          showBottomNav.value = false;
-        }
-      } else if (width.value > 600 && width.value <= 840) {
-        drawer.value = true; // 600到840
-        rail.value = false;
-        showBottomNav.value = false;
-      } else {
-        drawer.value = false; //  小於600
-        rail.value = false;
-        showBottomNav.value = true;
-      }
-    };
+const drawer = ref(true);
+const rail = ref(false);
+const showBottomNav = ref(false);
 
-    // 在組件掛載後添加事件監聽器
-    onMounted(() => {
-      handleResize(); // 初始調用一次以設定初始狀態
-      window.addEventListener("resize", handleResize);
-    });
-
-    // 在組件卸載前移除事件監聽器
-    onBeforeUnmount(() => {
-      window.removeEventListener("resize", handleResize);
-    });
-
-    // 需要返回的數據或方法
-    return {
-      drawer,
-      rail,
-      railIcon,
-      toggleRail,
-      showBottomNav,
-    };
-  },
-  data() {
-    return {
-      menuItems: [
-        { icon: "mdi-home", title: "首頁", value: "", type: "internal" },
-        {
-          icon: "mdi-account-multiple-outline",
-          title: "代理人",
-          value: "agent",
-          type: "internal",
-        },
-        {
-          icon: "mdi-knife-military",
-          title: "音擎",
-          value: "w-engine",
-          type: "internal",
-        },
-        {
-          icon: "mdi-tshirt-crew-outline",
-          title: "驅動光碟",
-          value: "driver",
-          type: "internal",
-        },
-        {
-          icon: "mdi-map-outline",
-          title: "邦布",
-          value: "bangboo",
-          type: "internal",
-        },
-        {
-          icon: "mdi-cog-outline",
-          title: "設定",
-          value: "settings",
-          type: "internal",
-        },
-        {
-          icon: "mdi-alert-octagon-outline",
-          title: "意見回饋",
-          value: "suggest",
-          type: "external",
-        },
-      ],
-      buttomitem: [
-        {
-          icon: "mdi-home",
-          title: "首頁",
-          value: "index",
-          type: "internal",
-        },
-        {
-          icon: "mdi-map-outline",
-          title: "Wiki",
-          value: "wiki",
-          type: "internal",
-        },
-        {
-          icon: "mdi-cog-outline",
-          title: "工具",
-          value: "settings",
-          type: "internal",
-        },
-        {
-          icon: "mdi-cog-outline",
-          title: "設定",
-          value: "settings",
-          type: "internal",
-        },
-      ],
-    };
-  },
-  methods: {
-    selectItem(item) {
-      if (item.type === "internal") {
-        this.$router.push({ path: "/" + item.value });
-      } else if (item.type === "external") {
-        window.open(item.value, "_blank");
-      }
-    },
-  },
+// KMP SVG Paths
+const icons = {
+  home: "M6,19H9V14C9,13.448 9.448,13 10,13H14C14.552,13 15,13.448 15,14V19H18V10.5C18,10.185 17.852,9.889 17.6,9.7L12.6,5.95C12.244,5.683 11.756,5.683 11.4,5.95L6.4,9.7C6.148,9.889 6,10.185 6,10.5V19ZM5,21C4.448,21 4,20.552 4,20V9.5C4,9.185 4.148,8.889 4.4,8.7L11.4,3.45C11.756,3.183 12.244,3.183 12.6,3.45L19.6,8.7C19.852,8.889 20,9.185 20,9.5V20C20,20.552 19.552,21 19,21H14C13.448,21 13,20.552 13,20V15H11V20C11,20.552 10.552,21 10,21H5Z",
+  agent: `M3,8.25C3,7.38 3.216,6.523 3.629,5.757C4.042,4.991 4.639,4.34 5.366,3.862C6.094,3.384 6.928,3.095 7.795,3.019C8.662,2.944 9.534,3.085 10.333,3.43C11.132,3.775 11.832,4.314 12.371,4.997C12.91,5.68 13.271,6.486 13.421,7.343C13.571,8.201 13.506,9.082 13.231,9.907C12.957,10.733 12.481,11.477 11.847,12.073C13.042,12.653 14.08,13.513 14.872,14.58C15.664,15.646 16.188,16.888 16.398,18.199C16.421,18.346 16.415,18.495 16.381,18.638C16.346,18.782 16.284,18.917 16.197,19.037C16.11,19.157 16.001,19.258 15.875,19.335C15.749,19.412 15.609,19.464 15.463,19.487C15.317,19.51 15.168,19.505 15.024,19.47C14.88,19.436 14.745,19.373 14.625,19.286C14.506,19.199 14.404,19.09 14.327,18.964C14.25,18.838 14.198,18.698 14.175,18.552C13.95,17.142 13.23,15.859 12.144,14.933C11.058,14.007 9.677,13.498 8.25,13.498C6.823,13.498 5.442,14.007 4.356,14.933C3.27,15.859 2.55,17.142 2.325,18.552C2.302,18.698 2.25,18.838 2.173,18.964C2.095,19.09 1.994,19.199 1.874,19.286C1.755,19.373 1.619,19.435 1.475,19.47C1.332,19.504 1.182,19.51 1.037,19.486C0.891,19.463 0.751,19.412 0.625,19.334C0.499,19.257 0.389,19.155 0.302,19.036C0.216,18.916 0.153,18.781 0.119,18.637C0.085,18.493 0.079,18.344 0.102,18.198C0.313,16.887 0.836,15.646 1.628,14.58C2.421,13.514 3.458,12.655 4.653,12.075C4.131,11.584 3.714,10.992 3.43,10.334C3.146,9.676 2.999,8.967 3,8.25ZM16.5,6C17.372,6.001 18.224,6.254 18.954,6.73C19.684,7.206 20.261,7.883 20.614,8.68C20.966,9.477 21.08,10.359 20.941,11.22C20.802,12.08 20.416,12.882 19.83,13.527C20.743,13.98 21.554,14.615 22.214,15.391C22.875,16.168 23.37,17.071 23.67,18.045C23.729,18.234 23.738,18.436 23.694,18.629C23.651,18.822 23.557,19.001 23.422,19.146C23.287,19.291 23.116,19.399 22.927,19.456C22.737,19.514 22.535,19.521 22.343,19.476C22.15,19.431 21.972,19.336 21.827,19.201C21.683,19.066 21.576,18.895 21.519,18.705C21.25,17.835 20.76,17.05 20.097,16.427C19.434,15.803 18.621,15.362 17.736,15.147C17.49,15.088 17.272,14.947 17.116,14.749C16.959,14.55 16.875,14.305 16.875,14.052V13.524C16.875,13.315 16.933,13.109 17.044,12.931C17.154,12.753 17.312,12.609 17.499,12.516C17.954,12.291 18.319,11.918 18.535,11.459C18.752,11 18.806,10.481 18.691,9.987C18.575,9.493 18.295,9.052 17.898,8.737C17.5,8.422 17.007,8.25 16.5,8.25C16.202,8.25 15.915,8.131 15.705,7.92C15.493,7.71 15.375,7.423 15.375,7.125C15.375,6.827 15.493,6.54 15.705,6.33C15.915,6.119 16.202,6 16.5,6ZM8.25,5.25C7.851,5.241 7.453,5.312 7.081,5.458C6.71,5.605 6.371,5.824 6.085,6.104C5.799,6.383 5.572,6.717 5.417,7.085C5.262,7.453 5.182,7.849 5.182,8.248C5.182,8.648 5.262,9.044 5.417,9.412C5.572,9.78 5.799,10.114 6.084,10.394C6.37,10.673 6.708,10.893 7.08,11.04C7.452,11.186 7.849,11.257 8.249,11.248C9.032,11.231 9.778,10.908 10.327,10.347C10.875,9.787 11.182,9.034 11.182,8.25C11.182,7.466 10.876,6.713 10.328,6.152C9.78,5.592 9.034,5.268 8.25,5.25Z`,
+  setting: `M19.9,12.66C19.74,12.477 19.651,12.243 19.651,12C19.651,11.757 19.74,11.523 19.9,11.34L21.18,9.9C21.321,9.743 21.409,9.545 21.43,9.335C21.452,9.124 21.406,8.913 21.3,8.73L19.3,5.27C19.195,5.088 19.035,4.943 18.843,4.857C18.651,4.771 18.436,4.747 18.23,4.79L16.35,5.17C16.111,5.219 15.862,5.18 15.65,5.058C15.438,4.936 15.278,4.741 15.2,4.51L14.59,2.68C14.523,2.481 14.395,2.309 14.225,2.187C14.054,2.065 13.85,1.999 13.64,2H9.64C9.422,1.989 9.206,2.049 9.026,2.172C8.845,2.295 8.71,2.473 8.64,2.68L8.08,4.51C8.002,4.741 7.842,4.936 7.63,5.058C7.418,5.18 7.169,5.219 6.93,5.17L5,4.79C4.805,4.762 4.605,4.793 4.427,4.879C4.249,4.964 4.101,5.1 4,5.27L2,8.73C1.891,8.911 1.842,9.121 1.86,9.331C1.878,9.541 1.962,9.74 2.1,9.9L3.37,11.34C3.53,11.523 3.619,11.757 3.619,12C3.619,12.243 3.53,12.477 3.37,12.66L2.1,14.1C1.962,14.26 1.878,14.459 1.86,14.669C1.842,14.879 1.891,15.089 2,15.27L4,18.73C4.105,18.913 4.265,19.057 4.457,19.143C4.649,19.229 4.864,19.253 5.07,19.21L6.95,18.83C7.189,18.781 7.438,18.82 7.65,18.942C7.862,19.064 8.022,19.258 8.1,19.49L8.71,21.32C8.78,21.527 8.915,21.705 9.096,21.828C9.276,21.951 9.492,22.011 9.71,22H13.71C13.92,22.001 14.124,21.935 14.295,21.813C14.465,21.691 14.593,21.519 14.66,21.32L15.27,19.49C15.348,19.258 15.508,19.064 15.72,18.942C15.932,18.82 16.181,18.781 16.42,18.83L18.3,19.21C18.506,19.253 18.721,19.229 18.913,19.143C19.105,19.057 19.265,18.913 19.37,18.73L21.37,15.27C21.476,15.087 21.522,14.876 21.5,14.665C21.479,14.455 21.391,14.257 21.25,14.1L19.9,12.66ZM18.41,14L19.21,14.9L17.93,17.12L16.75,16.88C16.03,16.733 15.281,16.855 14.645,17.224C14.009,17.593 13.53,18.182 13.3,18.88L12.92,20H10.36L10,18.86C9.77,18.162 9.291,17.573 8.655,17.204C8.019,16.835 7.27,16.713 6.55,16.86L5.37,17.1L4.07,14.89L4.87,13.99C5.362,13.44 5.634,12.728 5.634,11.99C5.634,11.252 5.362,10.54 4.87,9.99L4.07,9.09L5.35,6.89L6.53,7.13C7.25,7.277 7.999,7.155 8.635,6.786C9.271,6.418 9.75,5.828 9.98,5.13L10.36,4H12.92L13.3,5.14C13.53,5.838 14.009,6.428 14.645,6.796C15.281,7.165 16.03,7.287 16.75,7.14L17.93,6.9L19.21,9.12L18.41,10.02C17.924,10.569 17.655,11.277 17.655,12.01C17.655,12.743 17.924,13.451 18.41,14ZM11.64,8C10.849,8 10.075,8.235 9.418,8.674C8.76,9.114 8.247,9.738 7.944,10.469C7.642,11.2 7.563,12.005 7.717,12.78C7.871,13.556 8.252,14.269 8.812,14.828C9.371,15.388 10.084,15.769 10.86,15.923C11.636,16.077 12.44,15.998 13.171,15.696C13.902,15.393 14.526,14.88 14.966,14.222C15.405,13.564 15.64,12.791 15.64,12C15.64,10.939 15.219,9.922 14.468,9.172C13.718,8.421 12.701,8 11.64,8ZM11.64,14C11.245,14 10.858,13.883 10.529,13.663C10.2,13.443 9.944,13.131 9.792,12.765C9.641,12.4 9.601,11.998 9.678,11.61C9.756,11.222 9.946,10.866 10.226,10.586C10.505,10.306 10.862,10.116 11.25,10.038C11.638,9.961 12.04,10.001 12.405,10.152C12.771,10.304 13.083,10.56 13.303,10.889C13.523,11.218 13.64,11.604 13.64,12C13.64,12.53 13.429,13.039 13.054,13.414C12.679,13.789 12.17,14 11.64,14Z`,
+  sun: "M12,5C11.717,5 11.479,4.904 11.288,4.712C11.097,4.52 11.001,4.283 11,4V2C11,1.717 11.096,1.479 11.288,1.288C11.48,1.097 11.717,1.001 12,1C12.283,0.999 12.52,1.095 12.713,1.288C12.906,1.481 13.001,1.718 13,2V4C13,4.283 12.904,4.521 12.712,4.713C12.52,4.905 12.283,5.001 12,5ZM16.95,7.05C16.767,6.867 16.675,6.638 16.675,6.363C16.675,6.088 16.767,5.851 16.95,5.65L18.35,4.225C18.55,4.025 18.787,3.925 19.062,3.925C19.337,3.925 19.574,4.025 19.775,4.225C19.958,4.408 20.05,4.642 20.05,4.925C20.05,5.208 19.958,5.442 19.775,5.625L18.35,7.05C18.167,7.233 17.933,7.325 17.65,7.325C17.367,7.325 17.133,7.233 16.95,7.05ZM20,13C19.717,13 19.479,12.904 19.287,12.712C19.095,12.52 18.999,12.283 19,12C19.001,11.717 19.097,11.48 19.288,11.288C19.479,11.096 19.717,11 20,11H22C22.283,11 22.521,11.096 22.713,11.288C22.905,11.48 23.001,11.717 23,12C22.999,12.283 22.903,12.52 22.712,12.713C22.521,12.906 22.283,13.001 22,13H20ZM12,23C11.717,23 11.479,22.904 11.288,22.712C11.097,22.52 11.001,22.283 11,22V20C11,19.717 11.096,19.479 11.288,19.288C11.48,19.097 11.717,19.001 12,19C12.283,18.999 12.52,19.095 12.713,19.288C12.906,19.481 13.001,19.718 13,20V22C13,22.283 12.904,22.521 12.712,22.713C12.52,22.905 12.283,23.001 12,23ZM5.65,7.05L4.225,5.65C4.025,5.45 3.925,5.208 3.925,4.925C3.925,4.642 4.025,4.408 4.225,4.225C4.408,4.042 4.642,3.95 4.925,3.95C5.208,3.95 5.442,4.042 5.625,4.225L7.05,5.65C7.233,5.833 7.325,6.067 7.325,6.35C7.325,6.633 7.233,6.867 7.05,7.05C6.85,7.233 6.617,7.325 6.35,7.325C6.083,7.325 5.85,7.233 5.65,7.05ZM18.35,19.775L16.95,18.35C16.767,18.15 16.675,17.913 16.675,17.638C16.675,17.363 16.767,17.134 16.95,16.95C17.133,16.766 17.363,16.674 17.638,16.675C17.913,16.676 18.151,16.767 18.35,16.95L19.775,18.35C19.975,18.533 20.071,18.767 20.063,19.05C20.055,19.333 19.959,19.575 19.775,19.775C19.575,19.975 19.333,20.075 19.05,20.075C18.767,20.075 18.533,19.975 18.35,19.775ZM2,13C1.717,13 1.479,12.904 1.288,12.712C1.097,12.52 1.001,12.283 1,12C0.999,11.717 1.095,11.48 1.288,11.288C1.481,11.096 1.718,11 2,11H4C4.283,11 4.521,11.096 4.713,11.288C4.905,11.48 5.001,11.717 5,12C4.999,12.283 4.903,12.52 4.712,12.713C4.521,12.906 4.283,13.001 4,13H2ZM4.225,19.775C4.042,19.592 3.95,19.358 3.95,19.075C3.95,18.792 4.042,18.558 4.225,18.375L5.65,16.95C5.833,16.767 6.062,16.675 6.337,16.675C6.612,16.675 6.849,16.767 7.05,16.95C7.25,17.15 7.35,17.388 7.35,17.663C7.35,17.938 7.25,18.176 7.05,18.375L5.65,19.775C5.45,19.975 5.208,20.075 4.925,20.075C4.642,20.075 4.408,19.975 4.225,19.775ZM12,18C10.333,18 8.917,17.417 7.75,16.25C6.583,15.083 6,13.667 6,12C6,10.333 6.583,8.917 7.75,7.75C8.917,6.583 10.333,6 12,6C13.667,6 15.083,6.583 16.25,7.75C17.417,8.917 18,10.333 18,12C18,13.667 17.417,15.083 16.25,16.25C15.083,17.417 13.667,18 12,18ZM12,16C13.1,16 14.042,15.608 14.825,14.825C15.608,14.042 16,13.1 16,12C16,10.9 15.608,9.958 14.825,9.175C14.042,8.392 13.1,8 12,8C10.9,8 9.958,8.392 9.175,9.175C8.392,9.958 8,10.9 8,12C8,13.1 8.392,14.042 9.175,14.825C9.958,15.608 10.9,16 12,16Z",
+  moon: "M12,21C9.483,21 7.354,20.129 5.613,18.387C3.872,16.645 3.001,14.516 3,12C3,9.7 3.75,7.704 5.25,6.012C6.75,4.32 8.667,3.333 11,3.05C11.217,3.017 11.408,3.046 11.575,3.138C11.742,3.23 11.875,3.351 11.975,3.5C12.075,3.649 12.129,3.824 12.138,4.025C12.147,4.226 12.084,4.417 11.95,4.6C11.667,5.033 11.454,5.492 11.312,5.975C11.17,6.458 11.099,6.967 11.1,7.5C11.1,9 11.625,10.275 12.675,11.325C13.725,12.375 15,12.9 16.5,12.9C17.017,12.9 17.529,12.825 18.038,12.675C18.547,12.525 19.001,12.317 19.4,12.05C19.583,11.933 19.771,11.879 19.963,11.888C20.155,11.897 20.326,11.942 20.475,12.025C20.642,12.108 20.771,12.233 20.863,12.4C20.955,12.567 20.984,12.767 20.95,13C20.717,15.3 19.738,17.208 18.013,18.725C16.288,20.242 14.284,21 12,21ZM12,19C13.467,19 14.783,18.596 15.95,17.787C17.117,16.978 17.967,15.924 18.5,14.625C18.167,14.708 17.833,14.775 17.5,14.825C17.167,14.875 16.833,14.9 16.5,14.9C14.45,14.9 12.704,14.179 11.262,12.737C9.82,11.295 9.099,9.549 9.1,7.5C9.1,7.167 9.125,6.833 9.175,6.5C9.225,6.167 9.292,5.833 9.375,5.5C8.075,6.033 7.021,6.883 6.212,8.05C5.403,9.217 4.999,10.533 5,12C5,13.933 5.683,15.583 7.05,16.95C8.417,18.317 10.067,19 12,19Z",
+  navBack: "M5,13L8.3,16.3C8.687,16.687 8.69,17.315 8.305,17.705C7.916,18.099 7.281,18.101 6.89,17.71L1.887,12.707C1.497,12.317 1.497,11.683 1.887,11.293L6.89,6.29C7.281,5.899 7.916,5.901 8.305,6.295C8.69,6.685 8.687,7.313 8.3,7.7L5,11H20C20.552,11 21,11.448 21,12C21,12.552 20.552,13 20,13H5ZM20,6C20.552,6 21,6.448 21,7C21,7.552 20.552,8 20,8H12C11.448,8 11,7.552 11,7C11,6.448 11.448,6 12,6H20ZM20,16C20.552,16 21,16.448 21,17C21,17.552 20.552,18 20,18H12C11.448,18 11,17.552 11,17C11,16.448 11.448,16 12,16H20Z"
 };
+
+const { t } = useLocalization();
+
+const menuItems = computed(() => [
+  { path: icons.home, title: t('home'), value: "/", type: "internal" },
+  { path: icons.agent, title: t('agents'), value: "/agent", type: "internal" },
+  { path: icons.setting, title: t('setting'), value: "/settings", type: "internal" },
+]);
+
+const buttomitem = computed(() => [
+  { path: icons.home, title: t('home'), value: "/", type: "internal" },
+  { path: icons.agent, title: t('agents'), value: "/agent", type: "internal" },
+  { path: icons.setting, title: t('setting'), value: "/settings", type: "internal" },
+]);
+
+const toggleRail = () => {
+  rail.value = !rail.value;
+};
+
+const toggleTheme = () => {
+  setTheme(theme.global.current.value.dark ? 'light' : 'dark');
+};
+
+const isRouteActive = (path) => {
+    if (path === '/' && route.path === '/') return true;
+    if (path !== '/' && route.path.startsWith(path)) return true;
+    return false;
+};
+
+const handleResize = () => {
+  if (width.value > 600) {
+      drawer.value = true;
+      showBottomNav.value = false;
+      // Default state for large screens can be tailored
+      if (width.value < 1280) rail.value = true;
+      else rail.value = false;
+  } else {
+    drawer.value = false;
+    showBottomNav.value = true;
+  }
+};
+
+const selectItem = (item) => {
+  if (item.type === "internal") {
+    // router matches value
+    router.push(item.value);
+  } else {
+    window.open(item.value, "_blank");
+  }
+};
+
+onMounted(() => {
+  handleResize();
+  window.addEventListener("resize", handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleResize);
+});
 </script>
+
+<style scoped>
+.tracking-wider {
+    letter-spacing: 0.1em !important;
+}
+.gap-1 {
+    gap: 4px;
+}
+</style>

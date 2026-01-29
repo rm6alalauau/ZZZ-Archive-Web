@@ -14,42 +14,85 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 // Color theme
 const zzzDarkTheme = {
-  dark: false,
+  dark: true,
   colors: {
-    background: '#000000',
-    surface: '#151515',
-    'on-surface': '#e7e7e7',
-    'surface-container': '#2a2a2a',
-    'on-surface-container': '#d1d1d1',
-    'outline': '#797979',
-    'on-surface-variant': '#e7e7e7',
-    primary: '#5C8A10',
-    'on-primary': '#213403',
-    'primary-container': '#4D730D',
-    'on-primary-container': '#CBE899',
-    secondary: '#d19a00',
-    'on-secondary': '#442404',
-    error: '#fca9a5',
-    'on-error': '#450c0a',
+    // KMP Neutral Palette
+    neutral50: '#f6f6f6',
+    neutral100: '#ebebeb',
+    neutral200: '#d1d1d1',
+    neutral300: '#b0b0b0',
+    neutral400: '#9e9e9e', // on-surface-variant
+    neutral500: '#797979',
+    neutral600: '#656565',
+    neutral700: '#4d4d4d',
+    neutral800: '#3e3e3e',
+    neutral900: '#212121', // surface-container
+    neutral950: '#1b1a1a', // surface
+
+    background: '#1b1a1a', // neutral950
+    surface: '#1b1a1a',    // neutral950
+    'on-surface': '#d1d1d1', // neutral200
+    'surface-variant': '#3e3e3e', // neutral800
+    'surface-container': '#212121', // neutral900
+    'on-surface-container': '#ebebeb', // neutral100 (Added for KMP match)
+    'on-surface-variant': '#9e9e9e', // neutral400
+    primary: '#91ca33', // primary500
+    'on-primary': '#213403', // primary950
+    'primary-container': '#365405', // primary900
+    'on-primary-container': '#dfefc4', // primary100
+    secondary: '#EEC316', // secondary500
+    'on-secondary': '#272000', // secondary950
+    error: '#b9221c', // alert700
     info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FB8C00',
   },
   variables: {
-    'border-color': '#797979',
+    'border-color': '#4d4d4d', // neutral700
     'border-opacity': 1,
-    'high-emphasis-opacity': 0.87,
-    'medium-emphasis-opacity': 0.60,
-    'disabled-opacity': 0.38,
-    'idle-opacity': 0.04,
-    'hover-opacity': 0.04,
-    'focus-opacity': 0.12,
-    'selected-opacity': 0.08,
-    'activated-opacity': 0.12,
-    'pressed-opacity': 0.12,
-    'dragged-opacity': 0.08,
-    'theme-kbd': '#212529',
-    'theme-on-kbd': '#FFFFFF',
-    'theme-code': '#F5F5F5',
-    'theme-on-code': '#000000',
+  }
+}
+
+const zzzLightTheme = {
+  dark: false,
+  colors: {
+    // KMP Light Palette
+    neutral50: '#f6f6f6',
+    neutral100: '#ebebeb',
+    neutral200: '#d1d1d1',
+    neutral300: '#b0b0b0',
+    neutral400: '#9e9e9e',
+    neutral500: '#797979',
+    neutral600: '#656565',
+    neutral700: '#4d4d4d',
+    neutral800: '#3e3e3e',
+    neutral900: '#212121',
+    neutral950: '#1b1a1a',
+
+    background: '#ebebeb', // neutral100
+    surface: '#ebebeb',    // neutral100
+    'on-surface': '#3e3e3e', // neutral800
+    'surface-variant': '#3e3e3e', // neutral800? - Actually onSurfaceVariant is neutral600
+    'surface-container': '#f6f6f6', // neutral50
+    'on-surface-container': '#3e3e3e', // neutral800 (Added for KMP match)
+    'on-surface-variant': '#656565', // neutral600
+
+    primary: '#76ab1d', // primary600
+    'on-primary': '#ebeee5', // primary50
+    'primary-container': '#cbe899', // primary200
+    'on-primary-container': '#365405', // primary900
+
+    secondary: '#DDB208', // secondary600
+    'on-secondary': '#272000', // secondary950
+
+    error: '#dc2d26', // alert600
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FB8C00',
+  },
+  variables: {
+    'border-color': '#ebebeb', // neutral100
+    'border-opacity': 1,
   }
 }
 
@@ -66,6 +109,7 @@ export default createVuetify({
     defaultTheme: 'zzzDarkTheme',
     themes: {
       zzzDarkTheme,
+      light: zzzLightTheme,
     },
   },
 })

@@ -1,6 +1,6 @@
 <template>
-  <Navigation />
   <v-app>
+    <Navigation />
     <v-main>
       <router-view />
     </v-main>
@@ -8,5 +8,5 @@
 </template>
 
 <script setup>
-//
+// Layout
 </script>
